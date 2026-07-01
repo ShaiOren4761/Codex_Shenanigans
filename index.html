@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Calculator</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #eef1f5;
+      color: #18202a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(222, 229, 238, 0.7)),
+        #eef1f5;
+    }
+
+    .calculator {
+      width: min(92vw, 360px);
+      padding: 18px;
+      border: 1px solid #d4dbe5;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 18px 45px rgba(31, 43, 58, 0.18);
+    }
+
+    .screen {
+      width: 100%;
+      min-height: 92px;
+      margin-bottom: 14px;
+      padding: 16px;
+      border: 1px solid #cad3df;
+      border-radius: 6px;
+      background: #f8fafc;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .history {
+      min-height: 22px;
+      color: #607086;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .current {
+      color: #121923;
+      font-size: clamp(32px, 10vw, 44px);
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      height: 58px;
+      border: 1px solid #cbd4df;
+      border-radius: 6px;
+      background: #f5f7fa;
+      color: #18202a;
+      font: 600 22px/1 "Segoe UI", Arial, sans-serif;
+      cursor: pointer;
+      transition: transform 90ms ease, background 90ms ease, border-color 90ms ease;
+      user-select: none;
+    }
+
+    button:hover {
+      background: #eaf0f7;
+      border-color: #b5c2d2;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .operator {
+      background: #e6f0ff;
+      border-color: #b8cff2;
+      color: #17477f;
+    }
+
+    .operator:hover {
+      background: #d9eaff;
+    }
+
+    .danger {
+      background: #fff0ec;
+      border-color: #f1b8a9;
+      color: #99422c;
+    }
+
+    .danger:hover {
+      background: #ffe5dd;
+    }
+
+    .equals {
+      background: #1f7a5a;
+      border-color: #176247;
+      color: #ffffff;
+    }
+
+    .equals:hover {
+      background: #176f50;
+    }
+
+    .wide {
+      grid-column: span 2;
+    }
+  </style>
+</head>
+<body>
+  <main class="calculator" aria-label="Basic calculator">
+    <section class="screen" aria-live="polite">
+      <div class="history" id="history"></div>
+      <div class="current" id="display">0</div>
+    </section>
+
+    <section class="keys">
+      <button class="danger" data-action="clear">C</button>
+      <button data-action="backspace">Back</button>
+      <button class="operator" data-operator="%">%</button>
+      <button class="operator" data-operator="/">/</button>
+
+      <button data-number="7">7</button>
+      <button data-number="8">8</button>
+      <button data-number="9">9</button>
+      <button class="operator" data-operator="*">x</button>
+
+      <button data-number="4">4</button>
+      <button data-number="5">5</button>
+      <button data-number="6">6</button>
+      <button class="operator" data-operator="-">-</button>
+
+      <button data-number="1">1</button>
+      <button data-number="2">2</button>
+      <button data-number="3">3</button>
+      <button class="operator" data-operator="+">+</button>
+
+      <button class="wide" data-number="0">0</button>
+      <button data-number=".">.</button>
+      <button class="equals" data-action="equals">=</button>
+    </section>
+  </main>
+
+  <script>
+    const display = document.getElementById("display");
+    const history = document.getElementById("history");
+
+    let currentValue = "0";
+    let storedValue = null;
+    let pendingOperator = null;
+    let shouldResetDisplay = false;
+
+    const operatorSymbols = {
+      "+": "+",
+      "-": "-",
+      "*": "x",
+      "/": "/",
+      "%": "%"
+    };
+
+    function updateDisplay() {
+      display.textContent = currentValue;
+      history.textContent = storedValue !== null && pendingOperator
+        ? `${formatNumber(storedValue)} ${operatorSymbols[pendingOperator]}`
+        : "";
+    }
+
+    function formatNumber(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) {
+        return "Error";
+      }
+
+      return Number.isInteger(number)
+        ? number.toString()
+        : parseFloat(number.toFixed(10)).toString();
+    }
+
+    function inputNumber(value) {
+      if (shouldResetDisplay) {
+        currentValue = value === "." ? "0." : value;
+        shouldResetDisplay = false;
+        updateDisplay();
+        return;
+      }
+
+      if (value === "." && currentValue.includes(".")) {
+        return;
+      }
+
+      if (currentValue === "0" && value !== ".") {
+        currentValue = value;
+      } else {
+        currentValue += value;
+      }
+
+      updateDisplay();
+    }
+
+    function clearCalculator() {
+      currentValue = "0";
+      storedValue = null;
+      pendingOperator = null;
+      shouldResetDisplay = false;
+      updateDisplay();
+    }
+
+    function backspace() {
+      if (shouldResetDisplay) {
+        currentValue = "0";
+        shouldResetDisplay = false;
+      } else {
+        currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : "0";
+      }
+
+      updateDisplay();
+    }
+
+    function calculate(left, right, operator) {
+      switch (operator) {
+        case "+": return left + right;
+        case "-": return left - right;
+        case "*": return left * right;
+        case "/": return right === 0 ? NaN : left / right;
+        case "%": return left % right;
+        default: return right;
+      }
+    }
+
+    function chooseOperator(operator) {
+      const inputValue = Number(currentValue);
+
+      if (pendingOperator && !shouldResetDisplay) {
+        const result = calculate(Number(storedValue), inputValue, pendingOperator);
+        currentValue = Number.isFinite(result) ? formatNumber(result) : "Error";
+        storedValue = currentValue === "Error" ? null : currentValue;
+      } else {
+        storedValue = currentValue;
+      }
+
+      pendingOperator = operator;
+      shouldResetDisplay = true;
+      updateDisplay();
+    }
+
+    function showResult() {
+      if (!pendingOperator || storedValue === null) {
+        return;
+      }
+
+      const result = calculate(Number(storedValue), Number(currentValue), pendingOperator);
+      history.textContent = `${formatNumber(storedValue)} ${operatorSymbols[pendingOperator]} ${currentValue} =`;
+      currentValue = Number.isFinite(result) ? formatNumber(result) : "Error";
+      display.textContent = currentValue;
+      storedValue = null;
+      pendingOperator = null;
+      shouldResetDisplay = true;
+    }
+
+    document.querySelector(".keys").addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) {
+        return;
+      }
+
+      if (button.dataset.number) {
+        inputNumber(button.dataset.number);
+      } else if (button.dataset.operator) {
+        chooseOperator(button.dataset.operator);
+      } else if (button.dataset.action === "clear") {
+        clearCalculator();
+      } else if (button.dataset.action === "backspace") {
+        backspace();
+      } else if (button.dataset.action === "equals") {
+        showResult();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const key = event.key;
+
+      if (/^\d$/.test(key) || key === ".") {
+        inputNumber(key);
+      } else if (["+", "-", "*", "/", "%"].includes(key)) {
+        chooseOperator(key);
+      } else if (key === "Enter" || key === "=") {
+        event.preventDefault();
+        showResult();
+      } else if (key === "Backspace") {
+        backspace();
+      } else if (key === "Escape" || key.toLowerCase() === "c") {
+        clearCalculator();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -140,8 +140,7 @@
     <section class="keys">
       <button class="danger" data-action="clear">C</button>
       <button data-action="backspace">Back</button>
-      <button class="operator" data-action="log">log</button>
-      <button class="operator" data-operator="%">%</button>
+      <button class="operator" data-operator="log">log</button>
       <button class="operator" data-operator="/">/</button>
 
       <button data-number="7">7</button>
@@ -159,8 +158,9 @@
       <button data-number="3">3</button>
       <button class="operator" data-operator="+">+</button>
 
-      <button class="wide" data-number="0">0</button>
+      <button data-number="0">0</button>
       <button data-number=".">.</button>
+      <button class="operator" data-operator="%">%</button>
       <button class="equals" data-action="equals">=</button>
     </section>
   </main>
@@ -179,11 +179,17 @@
       "-": "-",
       "*": "x",
       "/": "/",
-      "%": "%"
+      "%": "%",
+      "log": "log"
     };
 
     function updateDisplay() {
       display.textContent = currentValue;
+      if (storedValue !== null && pendingOperator === "log") {
+        history.textContent = `log base ${formatNumber(storedValue)} of`;
+        return;
+      }
+
       history.textContent = storedValue !== null && pendingOperator
         ? `${formatNumber(storedValue)} ${operatorSymbols[pendingOperator]}`
         : "";
@@ -240,18 +246,6 @@
       updateDisplay();
     }
 
-    function applyLog() {
-      const value = Number(currentValue);
-      const result = value > 0 ? Math.log10(value) : NaN;
-
-      history.textContent = `log(${currentValue})`;
-      currentValue = Number.isFinite(result) ? formatNumber(result) : "Error";
-      display.textContent = currentValue;
-      storedValue = null;
-      pendingOperator = null;
-      shouldResetDisplay = true;
-    }
-
     function calculate(left, right, operator) {
       switch (operator) {
         case "+": return left + right;
@@ -259,6 +253,7 @@
         case "*": return left * right;
         case "/": return right === 0 ? NaN : left / right;
         case "%": return left % right;
+        case "log": return left > 0 && left !== 1 && right > 0 ? Math.log(right) / Math.log(left) : NaN;
         default: return right;
       }
     }
@@ -285,7 +280,9 @@
       }
 
       const result = calculate(Number(storedValue), Number(currentValue), pendingOperator);
-      history.textContent = `${formatNumber(storedValue)} ${operatorSymbols[pendingOperator]} ${currentValue} =`;
+      history.textContent = pendingOperator === "log"
+        ? `log base ${formatNumber(storedValue)} of ${currentValue} =`
+        : `${formatNumber(storedValue)} ${operatorSymbols[pendingOperator]} ${currentValue} =`;
       currentValue = Number.isFinite(result) ? formatNumber(result) : "Error";
       display.textContent = currentValue;
       storedValue = null;
@@ -307,8 +304,6 @@
         clearCalculator();
       } else if (button.dataset.action === "backspace") {
         backspace();
-      } else if (button.dataset.action === "log") {
-        applyLog();
       } else if (button.dataset.action === "equals") {
         showResult();
       }
@@ -321,6 +316,8 @@
         inputNumber(key);
       } else if (["+", "-", "*", "/", "%"].includes(key)) {
         chooseOperator(key);
+      } else if (key.toLowerCase() === "l") {
+        chooseOperator("log");
       } else if (key === "Enter" || key === "=") {
         event.preventDefault();
         showResult();
@@ -328,8 +325,6 @@
         backspace();
       } else if (key === "Escape" || key.toLowerCase() === "c") {
         clearCalculator();
-      } else if (key.toLowerCase() === "l") {
-        applyLog();
       }
     });
   </script>

@@ -140,6 +140,7 @@
     <section class="keys">
       <button class="danger" data-action="clear">C</button>
       <button data-action="backspace">Back</button>
+      <button class="operator" data-action="log">log</button>
       <button class="operator" data-operator="%">%</button>
       <button class="operator" data-operator="/">/</button>
 
@@ -239,6 +240,18 @@
       updateDisplay();
     }
 
+    function applyLog() {
+      const value = Number(currentValue);
+      const result = value > 0 ? Math.log10(value) : NaN;
+
+      history.textContent = `log(${currentValue})`;
+      currentValue = Number.isFinite(result) ? formatNumber(result) : "Error";
+      display.textContent = currentValue;
+      storedValue = null;
+      pendingOperator = null;
+      shouldResetDisplay = true;
+    }
+
     function calculate(left, right, operator) {
       switch (operator) {
         case "+": return left + right;
@@ -294,6 +307,8 @@
         clearCalculator();
       } else if (button.dataset.action === "backspace") {
         backspace();
+      } else if (button.dataset.action === "log") {
+        applyLog();
       } else if (button.dataset.action === "equals") {
         showResult();
       }
@@ -313,6 +328,8 @@
         backspace();
       } else if (key === "Escape" || key.toLowerCase() === "c") {
         clearCalculator();
+      } else if (key.toLowerCase() === "l") {
+        applyLog();
       }
     });
   </script>

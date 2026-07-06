@@ -1,332 +1,515 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Basic Calculator</title>
+  <title>Codex Shenanigans Portfolio</title>
   <style>
     :root {
       color-scheme: light;
+      --ink: #17202a;
+      --muted: #657386;
+      --paper: #f5f7f4;
+      --panel: #ffffff;
+      --line: #d9dfdc;
+      --green: #1f6b5c;
+      --blue: #245c99;
+      --coral: #b84f3a;
+      --gold: #a66d1d;
+      --violet: #66507a;
+      --soft-green: #e7f3ef;
+      --soft-blue: #eaf1fb;
+      --soft-coral: #fff0ec;
+      --soft-gold: #fff5df;
       font-family: "Segoe UI", Arial, sans-serif;
-      background: #eef1f5;
-      color: #18202a;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      min-height: 100vh;
       margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .hero {
+      min-height: 76vh;
+      display: grid;
+      align-content: space-between;
+      padding: 22px min(5vw, 56px) 54px;
+      color: #ffffff;
+      background:
+        linear-gradient(90deg, rgba(13, 22, 24, 0.88), rgba(13, 22, 24, 0.48)),
+        url("assets/banking.png") center / cover,
+        #17202a;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 8px;
       display: grid;
       place-items: center;
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(222, 229, 238, 0.7)),
-        #eef1f5;
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(8px);
     }
 
-    .calculator {
-      width: min(92vw, 360px);
-      padding: 18px;
-      border: 1px solid #d4dbe5;
-      border-radius: 8px;
-      background: #ffffff;
-      box-shadow: 0 18px 45px rgba(31, 43, 58, 0.18);
-    }
-
-    .screen {
-      width: 100%;
-      min-height: 92px;
-      margin-bottom: 14px;
-      padding: 16px;
-      border: 1px solid #cad3df;
-      border-radius: 6px;
-      background: #f8fafc;
-      text-align: right;
+    .nav-links {
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
-    }
-
-    .history {
-      min-height: 22px;
-      color: #607086;
-      font-size: 15px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .current {
-      color: #121923;
-      font-size: clamp(32px, 10vw, 44px);
-      line-height: 1.1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .keys {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
-    button {
-      height: 58px;
-      border: 1px solid #cbd4df;
-      border-radius: 6px;
-      background: #f5f7fa;
-      color: #18202a;
-      font: 600 22px/1 "Segoe UI", Arial, sans-serif;
-      cursor: pointer;
-      transition: transform 90ms ease, background 90ms ease, border-color 90ms ease;
-      user-select: none;
+    .nav-links a,
+    .button {
+      min-height: 40px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 14px;
+      font-weight: 800;
+      text-decoration: none;
     }
 
-    button:hover {
-      background: #eaf0f7;
-      border-color: #b5c2d2;
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.9);
     }
 
-    button:active {
-      transform: translateY(1px);
+    .nav-links a:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.12);
     }
 
-    .operator {
-      background: #e6f0ff;
-      border-color: #b8cff2;
-      color: #17477f;
+    .hero-content {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding-top: 80px;
     }
 
-    .operator:hover {
-      background: #d9eaff;
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #bde5dc;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
-    .danger {
-      background: #fff0ec;
-      border-color: #f1b8a9;
-      color: #99422c;
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(42px, 9vw, 86px);
+      line-height: 0.95;
+      letter-spacing: 0;
     }
 
-    .danger:hover {
-      background: #ffe5dd;
+    .hero-copy {
+      max-width: 690px;
+      margin: 20px 0 0;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: clamp(18px, 2.4vw, 23px);
+      line-height: 1.45;
     }
 
-    .equals {
-      background: #1f7a5a;
-      border-color: #176247;
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--ink);
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: #aeb9b5;
+      background: #fbfdfc;
+    }
+
+    .button.primary {
+      border-color: #ffffff;
+      background: #ffffff;
+      color: #13342f;
+    }
+
+    .button.ghost {
+      border-color: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      backdrop-filter: blur(8px);
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 48px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      max-width: 560px;
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .pill {
+      min-height: 30px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 11px;
+      background: var(--soft-green);
+      color: #155447;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .project-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: 0 14px 34px rgba(23, 32, 42, 0.08);
+    }
+
+    .project-image {
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #dfe6e3;
+    }
+
+    .project-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .project-body {
+      padding: 18px;
+    }
+
+    .project-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      min-height: 26px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffffff;
+      background: var(--blue);
+    }
+
+    .tag.green { background: var(--green); }
+    .tag.coral { background: var(--coral); }
+    .tag.gold { background: var(--gold); }
+    .tag.violet { background: var(--violet); }
+
+    .project-card h3 {
+      margin: 0;
+      font-size: 23px;
+      letter-spacing: 0;
+    }
+
+    .project-card p {
+      min-height: 68px;
+      margin: 10px 0 16px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .project-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .project-links .button {
+      min-height: 38px;
+      font-size: 14px;
+    }
+
+    .project-links .button.primary {
+      border-color: var(--green);
+      background: var(--green);
       color: #ffffff;
     }
 
-    .equals:hover {
-      background: #176f50;
+    .proof {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 28px;
     }
 
-    .wide {
-      grid-column: span 2;
+    .proof-card {
+      min-height: 132px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(23, 32, 42, 0.06);
+    }
+
+    .proof-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    .proof-card span {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    footer {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 0 0 32px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 820px) {
+      .hero {
+        min-height: 72vh;
+        padding: 18px 18px 42px;
+      }
+
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      main {
+        width: min(100% - 20px, 1180px);
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .projects,
+      .proof {
+        grid-template-columns: 1fr;
+      }
+
+      .project-card p {
+        min-height: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="calculator" aria-label="Basic calculator">
-    <section class="screen" aria-live="polite">
-      <div class="history" id="history"></div>
-      <div class="current" id="display">0</div>
+  <header class="hero">
+    <nav class="nav" aria-label="Portfolio navigation">
+      <a class="brand" href="index.html" aria-label="Codex Shenanigans home">
+        <span class="brand-mark">CS</span>
+        <span>Codex Shenanigans</span>
+      </a>
+      <div class="nav-links">
+        <a href="#projects">Projects</a>
+        <a href="README.md">README</a>
+        <a href="https://github.com/ShaiOren4761/Codex_Shenanigans">GitHub</a>
+      </div>
+    </nav>
+
+    <section class="hero-content">
+      <p class="eyebrow">Static portfolio for GitHub Pages</p>
+      <h1>Codex Shenanigans</h1>
+      <p class="hero-copy">A growing set of small, useful browser apps built as a practical portfolio: calculator, banking dashboard, CRM, and subscription billing admin.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#projects">View Projects</a>
+        <a class="button ghost" href="calculator/index.html">Open Calculator</a>
+      </div>
+    </section>
+  </header>
+
+  <main>
+    <section id="projects" aria-labelledby="projects-title">
+      <div class="section-head">
+        <div>
+          <h2 id="projects-title">Project Showcase</h2>
+          <p>Each project is dependency-free and can run directly in the browser, which makes the repo easy to review and easy to publish on GitHub Pages.</p>
+        </div>
+        <span class="pill">4 local apps</span>
+      </div>
+
+      <div class="projects">
+        <article class="project-card">
+          <figure class="project-image">
+            <img src="assets/calculator.png" alt="Calculator project screenshot">
+          </figure>
+          <div class="project-body">
+            <div class="project-meta">
+              <span class="tag violet">Utility</span>
+              <span>01</span>
+            </div>
+            <h3>Calculator</h3>
+            <p>A compact calculator with keyboard support, standard operators, modulo, and logarithms.</p>
+            <div class="project-links">
+              <a class="button primary" href="calculator/index.html">Open Project</a>
+              <a class="button" href="calculator/README.md">Notes</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <figure class="project-image">
+            <img src="assets/banking.png" alt="Mini banking dashboard screenshot">
+          </figure>
+          <div class="project-body">
+            <div class="project-meta">
+              <span class="tag green">Finance</span>
+              <span>02</span>
+            </div>
+            <h3>Mini Banking Dashboard</h3>
+            <p>Account balances, transfers, transaction filters, budgets, alerts, and local persistence.</p>
+            <div class="project-links">
+              <a class="button primary" href="mini-banking-dashboard/index.html">Open Project</a>
+              <a class="button" href="mini-banking-dashboard/README.md">Notes</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <figure class="project-image">
+            <img src="assets/crm.png" alt="Small business CRM screenshot">
+          </figure>
+          <div class="project-body">
+            <div class="project-meta">
+              <span class="tag coral">Operations</span>
+              <span>03</span>
+            </div>
+            <h3>Small Business CRM</h3>
+            <p>Contacts, deals, pipeline stages, task tracking, activity notes, search, and filters.</p>
+            <div class="project-links">
+              <a class="button primary" href="small-business-crm/index.html">Open Project</a>
+              <a class="button" href="small-business-crm/README.md">Notes</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <figure class="project-image">
+            <img src="assets/billing.png" alt="Subscription billing mock app screenshot">
+          </figure>
+          <div class="project-body">
+            <div class="project-meta">
+              <span class="tag gold">Billing</span>
+              <span>04</span>
+            </div>
+            <h3>Subscription Billing Mock App</h3>
+            <p>Plans, customers, invoices, payment states, retry workflow, and revenue metrics.</p>
+            <div class="project-links">
+              <a class="button primary" href="subscription-billing-mock-app/index.html">Open Project</a>
+              <a class="button" href="subscription-billing-mock-app/README.md">Notes</a>
+            </div>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <section class="keys">
-      <button class="danger" data-action="clear">C</button>
-      <button data-action="backspace">Back</button>
-      <button class="operator" data-operator="log">log</button>
-      <button class="operator" data-operator="/">/</button>
-
-      <button data-number="7">7</button>
-      <button data-number="8">8</button>
-      <button data-number="9">9</button>
-      <button class="operator" data-operator="*">x</button>
-
-      <button data-number="4">4</button>
-      <button data-number="5">5</button>
-      <button data-number="6">6</button>
-      <button class="operator" data-operator="-">-</button>
-
-      <button data-number="1">1</button>
-      <button data-number="2">2</button>
-      <button data-number="3">3</button>
-      <button class="operator" data-operator="+">+</button>
-
-      <button data-number="0">0</button>
-      <button data-number=".">.</button>
-      <button class="operator" data-operator="%">%</button>
-      <button class="equals" data-action="equals">=</button>
+    <section class="proof" aria-label="Portfolio highlights">
+      <article class="proof-card">
+        <strong>0</strong>
+        <span>Install steps. Everything runs from static HTML, CSS, and JavaScript.</span>
+      </article>
+      <article class="proof-card">
+        <strong>4</strong>
+        <span>Separate projects with their own folders and README files.</span>
+      </article>
+      <article class="proof-card">
+        <strong>100%</strong>
+        <span>Local-first demos that work before any hosting setup exists.</span>
+      </article>
+      <article class="proof-card">
+        <strong>Pages</strong>
+        <span>Ready to publish from the repository root on GitHub Pages.</span>
+      </article>
     </section>
   </main>
 
-  <script>
-    const display = document.getElementById("display");
-    const history = document.getElementById("history");
-
-    let currentValue = "0";
-    let storedValue = null;
-    let pendingOperator = null;
-    let shouldResetDisplay = false;
-
-    const operatorSymbols = {
-      "+": "+",
-      "-": "-",
-      "*": "x",
-      "/": "/",
-      "%": "%",
-      "log": "log"
-    };
-
-    function updateDisplay() {
-      display.textContent = currentValue;
-      if (storedValue !== null && pendingOperator === "log") {
-        history.textContent = `log base ${formatNumber(storedValue)} of`;
-        return;
-      }
-
-      history.textContent = storedValue !== null && pendingOperator
-        ? `${formatNumber(storedValue)} ${operatorSymbols[pendingOperator]}`
-        : "";
-    }
-
-    function formatNumber(value) {
-      const number = Number(value);
-      if (!Number.isFinite(number)) {
-        return "Error";
-      }
-
-      return Number.isInteger(number)
-        ? number.toString()
-        : parseFloat(number.toFixed(10)).toString();
-    }
-
-    function inputNumber(value) {
-      if (shouldResetDisplay) {
-        currentValue = value === "." ? "0." : value;
-        shouldResetDisplay = false;
-        updateDisplay();
-        return;
-      }
-
-      if (value === "." && currentValue.includes(".")) {
-        return;
-      }
-
-      if (currentValue === "0" && value !== ".") {
-        currentValue = value;
-      } else {
-        currentValue += value;
-      }
-
-      updateDisplay();
-    }
-
-    function clearCalculator() {
-      currentValue = "0";
-      storedValue = null;
-      pendingOperator = null;
-      shouldResetDisplay = false;
-      updateDisplay();
-    }
-
-    function backspace() {
-      if (shouldResetDisplay) {
-        currentValue = "0";
-        shouldResetDisplay = false;
-      } else {
-        currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : "0";
-      }
-
-      updateDisplay();
-    }
-
-    function calculate(left, right, operator) {
-      switch (operator) {
-        case "+": return left + right;
-        case "-": return left - right;
-        case "*": return left * right;
-        case "/": return right === 0 ? NaN : left / right;
-        case "%": return left % right;
-        case "log": return left > 0 && left !== 1 && right > 0 ? Math.log(right) / Math.log(left) : NaN;
-        default: return right;
-      }
-    }
-
-    function chooseOperator(operator) {
-      const inputValue = Number(currentValue);
-
-      if (pendingOperator && !shouldResetDisplay) {
-        const result = calculate(Number(storedValue), inputValue, pendingOperator);
-        currentValue = Number.isFinite(result) ? formatNumber(result) : "Error";
-        storedValue = currentValue === "Error" ? null : currentValue;
-      } else {
-        storedValue = currentValue;
-      }
-
-      pendingOperator = operator;
-      shouldResetDisplay = true;
-      updateDisplay();
-    }
-
-    function showResult() {
-      if (!pendingOperator || storedValue === null) {
-        return;
-      }
-
-      const result = calculate(Number(storedValue), Number(currentValue), pendingOperator);
-      history.textContent = pendingOperator === "log"
-        ? `log base ${formatNumber(storedValue)} of ${currentValue} =`
-        : `${formatNumber(storedValue)} ${operatorSymbols[pendingOperator]} ${currentValue} =`;
-      currentValue = Number.isFinite(result) ? formatNumber(result) : "Error";
-      display.textContent = currentValue;
-      storedValue = null;
-      pendingOperator = null;
-      shouldResetDisplay = true;
-    }
-
-    document.querySelector(".keys").addEventListener("click", (event) => {
-      const button = event.target.closest("button");
-      if (!button) {
-        return;
-      }
-
-      if (button.dataset.number) {
-        inputNumber(button.dataset.number);
-      } else if (button.dataset.operator) {
-        chooseOperator(button.dataset.operator);
-      } else if (button.dataset.action === "clear") {
-        clearCalculator();
-      } else if (button.dataset.action === "backspace") {
-        backspace();
-      } else if (button.dataset.action === "equals") {
-        showResult();
-      }
-    });
-
-    document.addEventListener("keydown", (event) => {
-      const key = event.key;
-
-      if (/^\d$/.test(key) || key === ".") {
-        inputNumber(key);
-      } else if (["+", "-", "*", "/", "%"].includes(key)) {
-        chooseOperator(key);
-      } else if (key.toLowerCase() === "l") {
-        chooseOperator("log");
-      } else if (key === "Enter" || key === "=") {
-        event.preventDefault();
-        showResult();
-      } else if (key === "Backspace") {
-        backspace();
-      } else if (key === "Escape" || key.toLowerCase() === "c") {
-        clearCalculator();
-      }
-    });
-  </script>
+  <footer>
+    Built as a practical coding portfolio with Codex. Push `main`, enable GitHub Pages from the root folder, and this page becomes the public entry point.
+  </footer>
 </body>
 </html>

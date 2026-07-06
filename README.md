@@ -1,14 +1,15 @@
-﻿# Codex Shenanigans
+﻿# Shai Oren Portfolio
 
-Small, practical software projects built locally with Codex as a coding partner.
+A practical software portfolio and credentials showcase built locally with Codex as a development partner.
 
-This repo is meant to show that useful applications do not have to start with a huge team or years of experience. Each project is intentionally self-contained, readable, and easy to run by opening its `index.html` file in a browser.
+The repo is intentionally self-contained: each project runs directly in the browser, and the homepage is ready for GitHub Pages. The portfolio has two clear categories: software projects and certificates.
 
-## Projects
+## Sections
 
-| Project | What it shows |
+| Section | What it shows |
 | --- | --- |
-| [Portfolio Hub](./index.html) | A GitHub Pages-ready showcase page linking to every project. |
+| [Portfolio Hub](./index.html) | A GitHub Pages-ready homepage for projects and certificates. |
+| [Certificates](./certificates/index.html) | Academic and professional credential slots, starting with the dean's list certificate placeholder. |
 | [Calculator](./calculator/index.html) | A compact browser calculator with keyboard support and extended operators. |
 | [Mini Banking Dashboard](./mini-banking-dashboard/index.html) | Account balances, transaction search, transfers, budgets, and alert logic. |
 | [Small Business CRM](./small-business-crm/index.html) | Contact/deal management, pipeline tracking, tasks, filtering, and activity notes. |
@@ -16,28 +17,19 @@ This repo is meant to show that useful applications do not have to start with a 
 
 ## GitHub Pages
 
-This repo can be published as a static site with GitHub Pages.
+This repo deploys through GitHub Actions using `.github/workflows/pages.yml`.
 
-1. Push `main` to GitHub.
-2. Open the repository on GitHub.
-3. Go to `Settings` > `Pages`.
-4. Set `Source` to `Deploy from a branch`.
-5. Choose branch `main` and folder `/root`.
-6. Save.
+After the repository rename and deployment finish, the portfolio URL is:
 
-After GitHub finishes deploying, the site should be available at:
+`https://shaioren4761.github.io/Shai_Oren_Portfolio/`
 
-`https://shaioren4761.github.io/Codex_Shenanigans/`
+## Repository
 
-## Why These Exist
+GitHub repository:
 
-The goal is not to pretend these are production systems. The goal is to demonstrate that with the right AI-assisted workflow, I can turn an idea into structured, working software:
+`https://github.com/ShaiOren4761/Shai_Oren_Portfolio`
 
-- Design a useful product flow.
-- Build responsive interfaces with plain HTML, CSS, and JavaScript.
-- Model realistic data.
-- Add search, filters, forms, state changes, and local persistence.
-- Keep projects organized so another person can understand the repo.
+The local folder may still be named `Codex_Shenanigans` while VSCode is open. Renaming the local folder is optional and should be done only after closing VSCode/Codex windows that are using it.
 
 ## Running Locally
 

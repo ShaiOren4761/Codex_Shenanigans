@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Small Business CRM</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #16202a;
+      --muted: #657386;
+      --page: #f5f6f8;
+      --panel: #ffffff;
+      --line: #d7dee7;
+      --teal: #147d7e;
+      --indigo: #3f5fb8;
+      --amber: #b06b13;
+      --red: #b64232;
+      --green: #247a4d;
+      --soft-teal: #e8f6f6;
+      --soft-indigo: #edf1ff;
+      --soft-amber: #fff5df;
+      --soft-red: #ffefec;
+      --soft-green: #eaf6ef;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--teal);
+      color: #ffffff;
+      font-weight: 900;
+      letter-spacing: 0;
+      flex: 0 0 auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .brand p,
+    .muted {
+      color: var(--muted);
+    }
+
+    .brand p {
+      margin-bottom: 0;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px;
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 800;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    .button:hover {
+      border-color: #a9b7c5;
+      background: #fafcff;
+    }
+
+    .button:active {
+      transform: translateY(1px);
+    }
+
+    .button.primary {
+      border-color: var(--teal);
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .button.danger {
+      border-color: #e1aaa1;
+      background: var(--soft-red);
+      color: #883124;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .content,
+    .side {
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel,
+    .metric,
+    .stage,
+    .task,
+    .note {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 12px 28px rgba(22, 32, 42, 0.07);
+    }
+
+    .panel {
+      padding: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 112px;
+      padding: 15px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .metric strong {
+      font-size: clamp(24px, 3vw, 31px);
+      letter-spacing: 0;
+    }
+
+    .metric small {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr minmax(150px, 190px);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #c8d2df;
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    input:focus,
+    select:focus {
+      outline: 3px solid rgba(20, 125, 126, 0.18);
+      border-color: var(--teal);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      background: #ffffff;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #e8edf3;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #fbfcfe;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .right {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .status.lead {
+      background: var(--soft-indigo);
+      color: #304d99;
+    }
+
+    .status.active {
+      background: var(--soft-green);
+      color: #17603b;
+    }
+
+    .status.customer {
+      background: var(--soft-teal);
+      color: #0e6464;
+    }
+
+    .status.at-risk,
+    .status.hot {
+      background: var(--soft-red);
+      color: #8b3023;
+    }
+
+    .status.pending {
+      background: var(--soft-amber);
+      color: #80500d;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .stage {
+      min-height: 250px;
+      padding: 12px;
+      box-shadow: none;
+    }
+
+    .stage h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .deal {
+      border: 1px solid #e1e7ef;
+      border-radius: 8px;
+      padding: 11px;
+      margin-bottom: 10px;
+      background: #fbfcfe;
+    }
+
+    .deal strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .deal p {
+      margin: 0 0 9px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .deal-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    form {
+      display: grid;
+      gap: 11px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: #405063;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .task,
+    .note {
+      padding: 12px;
+      box-shadow: none;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .task input {
+      width: 18px;
+      height: 18px;
+      min-height: auto;
+      margin-top: 2px;
+      accent-color: var(--teal);
+    }
+
+    .task strong,
+    .note strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .task.done strong {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .notice {
+      min-height: 20px;
+      color: var(--green);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 14px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1050px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .metrics,
+      .pipeline {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        width: min(100% - 20px, 1220px);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .top-actions,
+      .button {
+        width: 100%;
+      }
+
+      .metrics,
+      .pipeline,
+      .side,
+      .toolbar,
+      .split {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">CRM</div>
+        <div>
+          <h1>Small Business CRM</h1>
+          <p>Contacts, pipeline, tasks, and customer activity in one place.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="button" id="addSampleTask" type="button">Add Follow-Up</button>
+        <button class="button danger" id="resetData" type="button">Reset Demo Data</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="content">
+        <div class="metrics" id="metrics"></div>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Contacts</h2>
+            <span class="muted" id="contactCount"></span>
+          </div>
+          <div class="toolbar">
+            <input id="contactSearch" type="search" placeholder="Search name, company, role, or email">
+            <select id="statusFilter">
+              <option value="all">All statuses</option>
+              <option value="Lead">Leads</option>
+              <option value="Active">Active</option>
+              <option value="Customer">Customers</option>
+              <option value="At Risk">At risk</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Company</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Last Touch</th>
+                  <th class="right">Deal Value</th>
+                </tr>
+              </thead>
+              <tbody id="contactRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Pipeline</h2>
+            <span class="muted">Grouped by stage</span>
+          </div>
+          <div class="pipeline" id="pipeline"></div>
+        </section>
+      </section>
+
+      <aside class="side">
+        <section class="panel">
+          <div class="section-head">
+            <h2>Add Contact</h2>
+            <span class="status active">Local</span>
+          </div>
+          <form id="contactForm">
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" required maxlength="42" placeholder="Morgan Lee">
+            </div>
+            <div class="field">
+              <label for="company">Company</label>
+              <input id="company" required maxlength="48" placeholder="Northwind Studio">
+            </div>
+            <div class="split">
+              <div class="field">
+                <label for="role">Role</label>
+                <input id="role" required maxlength="36" placeholder="Owner">
+              </div>
+              <div class="field">
+                <label for="status">Status</label>
+                <select id="status">
+                  <option>Lead</option>
+                  <option>Active</option>
+                  <option>Customer</option>
+                  <option>At Risk</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" required maxlength="56" placeholder="morgan@example.com">
+            </div>
+            <button class="button primary" type="submit">Save Contact</button>
+            <div class="notice" id="contactNotice" aria-live="polite"></div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Add Deal</h2>
+            <span class="status pending">Pipeline</span>
+          </div>
+          <form id="dealForm">
+            <div class="field">
+              <label for="dealName">Deal</label>
+              <input id="dealName" required maxlength="48" placeholder="Website redesign">
+            </div>
+            <div class="split">
+              <div class="field">
+                <label for="dealCompany">Company</label>
+                <input id="dealCompany" required maxlength="48" placeholder="Northwind Studio">
+              </div>
+              <div class="field">
+                <label for="dealValue">Value</label>
+                <input id="dealValue" type="number" min="100" step="50" required placeholder="4500">
+              </div>
+            </div>
+            <div class="field">
+              <label for="dealStage">Stage</label>
+              <select id="dealStage">
+                <option>Lead</option>
+                <option>Qualified</option>
+                <option>Proposal</option>
+                <option>Won</option>
+              </select>
+            </div>
+            <button class="button primary" type="submit">Add Deal</button>
+            <div class="notice" id="dealNotice" aria-live="polite"></div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Tasks</h2>
+            <span class="muted" id="taskCount"></span>
+          </div>
+          <div class="stack" id="tasks"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Activity</h2>
+            <span class="muted">Latest</span>
+          </div>
+          <div class="stack" id="activity"></div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const storageKey = "small-business-crm-state";
+    const stages = ["Lead", "Qualified", "Proposal", "Won"];
+
+    const seedState = {
+      contacts: [
+        { id: 1, name: "Ari Cohen", company: "BrightDesk", role: "Operations Lead", email: "ari@brightdesk.example", status: "Customer", lastTouch: "2026-07-02", dealValue: 7200 },
+        { id: 2, name: "Nina Patel", company: "Urban Pantry", role: "Founder", email: "nina@urbanpantry.example", status: "Active", lastTouch: "2026-07-01", dealValue: 4100 },
+        { id: 3, name: "Marcus Bell", company: "Bell Fitness", role: "Owner", email: "marcus@bellfitness.example", status: "Lead", lastTouch: "2026-06-29", dealValue: 2600 },
+        { id: 4, name: "Elena Torres", company: "Torres Legal", role: "Partner", email: "elena@torreslegal.example", status: "At Risk", lastTouch: "2026-06-18", dealValue: 5800 },
+        { id: 5, name: "Sam Rivera", company: "Rivera Renovations", role: "Manager", email: "sam@riverareno.example", status: "Customer", lastTouch: "2026-06-27", dealValue: 9300 }
+      ],
+      deals: [
+        { id: 101, name: "Client portal refresh", company: "BrightDesk", value: 7200, stage: "Won", nextStep: "Schedule kickoff" },
+        { id: 102, name: "Online ordering flow", company: "Urban Pantry", value: 4100, stage: "Proposal", nextStep: "Send revised scope" },
+        { id: 103, name: "Lead capture site", company: "Bell Fitness", value: 2600, stage: "Lead", nextStep: "Book discovery call" },
+        { id: 104, name: "Intake automation", company: "Torres Legal", value: 5800, stage: "Qualified", nextStep: "Confirm compliance needs" },
+        { id: 105, name: "Quote tracker", company: "Rivera Renovations", value: 9300, stage: "Proposal", nextStep: "Review timeline" }
+      ],
+      tasks: [
+        { id: 201, title: "Send revised proposal to Urban Pantry", contact: "Nina Patel", due: "2026-07-05", priority: "Hot", done: false },
+        { id: 202, title: "Check risk concerns with Torres Legal", contact: "Elena Torres", due: "2026-07-06", priority: "Pending", done: false },
+        { id: 203, title: "Prepare kickoff checklist for BrightDesk", contact: "Ari Cohen", due: "2026-07-08", priority: "Active", done: false },
+        { id: 204, title: "Send thank-you note to Rivera Renovations", contact: "Sam Rivera", due: "2026-07-01", priority: "Active", done: true }
+      ],
+      activity: [
+        { id: 301, date: "2026-07-03", title: "BrightDesk signed the portal refresh agreement.", detail: "Moved deal to Won and queued kickoff steps." },
+        { id: 302, date: "2026-07-02", title: "Urban Pantry asked for a smaller first phase.", detail: "Proposal amount updated and follow-up task created." },
+        { id: 303, date: "2026-06-29", title: "Bell Fitness downloaded the pricing sheet.", detail: "Lead score increased after site visit." }
+      ]
+    };
+
+    let state = loadState();
+
+    const metricsEl = document.getElementById("metrics");
+    const contactRowsEl = document.getElementById("contactRows");
+    const contactCountEl = document.getElementById("contactCount");
+    const pipelineEl = document.getElementById("pipeline");
+    const tasksEl = document.getElementById("tasks");
+    const taskCountEl = document.getElementById("taskCount");
+    const activityEl = document.getElementById("activity");
+    const contactSearch = document.getElementById("contactSearch");
+    const statusFilter = document.getElementById("statusFilter");
+    const contactNotice = document.getElementById("contactNotice");
+    const dealNotice = document.getElementById("dealNotice");
+
+    function loadState() {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : structuredClone(seedState);
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function statusClass(status) {
+      return status.toLowerCase().replace(/\s+/g, "-");
+    }
+
+    function renderMetrics() {
+      const openDeals = state.deals.filter((deal) => deal.stage !== "Won");
+      const pipelineValue = openDeals.reduce((sum, deal) => sum + deal.value, 0);
+      const overdueTasks = state.tasks.filter((task) => !task.done && task.due < today()).length;
+      const activeContacts = state.contacts.filter((contact) => contact.status !== "At Risk").length;
+      const wonValue = state.deals
+        .filter((deal) => deal.stage === "Won")
+        .reduce((sum, deal) => sum + deal.value, 0);
+
+      const metrics = [
+        ["Open pipeline", money(pipelineValue), `${openDeals.length} active deals`],
+        ["Won revenue", money(wonValue), "Closed in this demo period"],
+        ["Active contacts", activeContacts, "Leads, active accounts, and customers"],
+        ["Overdue tasks", overdueTasks, "Tasks with due dates before today"]
+      ];
+
+      metricsEl.innerHTML = metrics.map(([label, value, note]) => `
+        <article class="metric">
+          <span>${label}</span>
+          <strong>${value}</strong>
+          <small>${note}</small>
+        </article>
+      `).join("");
+    }
+
+    function renderContacts() {
+      const query = contactSearch.value.trim().toLowerCase();
+      const filter = statusFilter.value;
+      const visible = state.contacts.filter((contact) => {
+        const haystack = `${contact.name} ${contact.company} ${contact.role} ${contact.email}`.toLowerCase();
+        return haystack.includes(query) && (filter === "all" || contact.status === filter);
+      });
+
+      contactCountEl.textContent = `${visible.length} shown`;
+
+      if (!visible.length) {
+        contactRowsEl.innerHTML = `<tr><td class="empty" colspan="6">No matching contacts.</td></tr>`;
+        return;
+      }
+
+      contactRowsEl.innerHTML = visible.map((contact) => `
+        <tr>
+          <td>
+            <strong>${contact.name}</strong><br>
+            <span class="muted">${contact.email}</span>
+          </td>
+          <td>${contact.company}</td>
+          <td>${contact.role}</td>
+          <td><span class="status ${statusClass(contact.status)}">${contact.status}</span></td>
+          <td>${contact.lastTouch}</td>
+          <td class="right"><strong>${money(contact.dealValue)}</strong></td>
+        </tr>
+      `).join("");
+    }
+
+    function renderPipeline() {
+      pipelineEl.innerHTML = stages.map((stage) => {
+        const deals = state.deals.filter((deal) => deal.stage === stage);
+        const total = deals.reduce((sum, deal) => sum + deal.value, 0);
+        const cards = deals.length
+          ? deals.map((deal) => `
+            <article class="deal">
+              <strong>${deal.name}</strong>
+              <p>${deal.company}</p>
+              <div class="deal-foot">
+                <span>${money(deal.value)}</span>
+                <span class="status ${stage === "Won" ? "customer" : stage === "Proposal" ? "pending" : "lead"}">${deal.stage}</span>
+              </div>
+              <p>${deal.nextStep}</p>
+            </article>
+          `).join("")
+          : `<div class="empty">No deals in this stage.</div>`;
+
+        return `
+          <section class="stage">
+            <h3>
+              <span>${stage}</span>
+              <span class="muted">${money(total)}</span>
+            </h3>
+            ${cards}
+          </section>
+        `;
+      }).join("");
+    }
+
+    function renderTasks() {
+      const openCount = state.tasks.filter((task) => !task.done).length;
+      taskCountEl.textContent = `${openCount} open`;
+      tasksEl.innerHTML = state.tasks
+        .sort((a, b) => Number(a.done) - Number(b.done) || a.due.localeCompare(b.due))
+        .map((task) => `
+          <label class="task ${task.done ? "done" : ""}">
+            <input type="checkbox" data-task-id="${task.id}" ${task.done ? "checked" : ""}>
+            <span>
+              <strong>${task.title}</strong>
+              <span class="muted">${task.contact} · due ${task.due}</span><br>
+              <span class="status ${statusClass(task.priority)}">${task.priority}</span>
+            </span>
+          </label>
+        `).join("");
+    }
+
+    function renderActivity() {
+      activityEl.innerHTML = state.activity
+        .slice()
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 5)
+        .map((item) => `
+          <article class="note">
+            <strong>${item.title}</strong>
+            <span class="muted">${item.date} · ${item.detail}</span>
+          </article>
+        `).join("");
+    }
+
+    function renderAll() {
+      renderMetrics();
+      renderContacts();
+      renderPipeline();
+      renderTasks();
+      renderActivity();
+    }
+
+    document.getElementById("contactForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const contact = {
+        id: Date.now(),
+        name: document.getElementById("name").value.trim(),
+        company: document.getElementById("company").value.trim(),
+        role: document.getElementById("role").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        status: document.getElementById("status").value,
+        lastTouch: today(),
+        dealValue: 0
+      };
+
+      state.contacts.unshift(contact);
+      state.activity.unshift({
+        id: Date.now() + 1,
+        date: today(),
+        title: `${contact.name} was added as a ${contact.status.toLowerCase()}.`,
+        detail: `${contact.company} is now tracked in the CRM.`
+      });
+
+      saveState();
+      form.reset();
+      contactNotice.textContent = "Contact saved.";
+      renderAll();
+    });
+
+    document.getElementById("dealForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const value = Number(document.getElementById("dealValue").value);
+      const deal = {
+        id: Date.now(),
+        name: document.getElementById("dealName").value.trim(),
+        company: document.getElementById("dealCompany").value.trim(),
+        value,
+        stage: document.getElementById("dealStage").value,
+        nextStep: "Follow up with decision maker"
+      };
+
+      state.deals.unshift(deal);
+      const matchingContact = state.contacts.find((contact) => contact.company.toLowerCase() === deal.company.toLowerCase());
+      if (matchingContact) {
+        matchingContact.dealValue += value;
+        matchingContact.lastTouch = today();
+      }
+
+      state.activity.unshift({
+        id: Date.now() + 1,
+        date: today(),
+        title: `${deal.name} was added to ${deal.stage}.`,
+        detail: `${deal.company} has a new ${money(value)} opportunity.`
+      });
+
+      saveState();
+      form.reset();
+      dealNotice.textContent = "Deal added.";
+      renderAll();
+    });
+
+    tasksEl.addEventListener("change", (event) => {
+      const checkbox = event.target.closest("input[type='checkbox']");
+      if (!checkbox) {
+        return;
+      }
+
+      const task = state.tasks.find((item) => item.id === Number(checkbox.dataset.taskId));
+      task.done = checkbox.checked;
+      saveState();
+      renderAll();
+    });
+
+    document.getElementById("addSampleTask").addEventListener("click", () => {
+      state.tasks.unshift({
+        id: Date.now(),
+        title: "Call new lead about project timeline",
+        contact: "Marcus Bell",
+        due: today(),
+        priority: "Hot",
+        done: false
+      });
+      state.activity.unshift({
+        id: Date.now() + 1,
+        date: today(),
+        title: "A follow-up task was created.",
+        detail: "Marcus Bell needs a timeline call today."
+      });
+      saveState();
+      renderAll();
+    });
+
+    document.getElementById("resetData").addEventListener("click", () => {
+      state = structuredClone(seedState);
+      saveState();
+      contactSearch.value = "";
+      statusFilter.value = "all";
+      contactNotice.textContent = "Demo data reset.";
+      dealNotice.textContent = "";
+      renderAll();
+    });
+
+    contactSearch.addEventListener("input", renderContacts);
+    statusFilter.addEventListener("change", renderContacts);
+
+    renderAll();
+  </script>
+</body>
+</html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Banking Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17212b;
+      --muted: #667587;
+      --line: #d9e0e8;
+      --panel: #ffffff;
+      --page: #f4f7fb;
+      --blue: #2364aa;
+      --green: #1c7c54;
+      --coral: #c8553d;
+      --gold: #b7791f;
+      --soft-blue: #eaf2ff;
+      --soft-green: #e8f6ef;
+      --soft-coral: #fff0eb;
+      --soft-gold: #fff7e4;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: var(--blue);
+      font-weight: 800;
+      letter-spacing: 0;
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px;
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 700;
+      transition: border-color 120ms ease, transform 120ms ease, background 120ms ease;
+    }
+
+    .button:hover {
+      border-color: #a9b7c6;
+      background: #f9fbfe;
+    }
+
+    .button:active {
+      transform: translateY(1px);
+    }
+
+    .button.primary {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    .button.danger {
+      border-color: #e4b5a8;
+      background: var(--soft-coral);
+      color: #8e3624;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(250px, 320px) 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel,
+    .metric,
+    .account,
+    .budget,
+    .alert,
+    .transfer-box,
+    .transactions {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 12px 30px rgba(23, 33, 43, 0.07);
+    }
+
+    .panel {
+      padding: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .accounts {
+      display: grid;
+      gap: 12px;
+    }
+
+    .account {
+      padding: 14px;
+    }
+
+    .account-top,
+    .account-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .account h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .account-balance {
+      margin: 10px 0 8px;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .account-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .meter {
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #edf1f6;
+      margin-top: 12px;
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      width: var(--value);
+      max-width: 100%;
+      border-radius: inherit;
+      background: var(--bar, var(--green));
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 118px;
+      padding: 15px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .metric strong {
+      font-size: clamp(23px, 3vw, 30px);
+      letter-spacing: 0;
+    }
+
+    .metric small {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.25fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .transfer-box {
+      padding: 16px;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: #405063;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    input:focus,
+    select:focus {
+      outline: 3px solid rgba(35, 100, 170, 0.18);
+      border-color: var(--blue);
+    }
+
+    .inline-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .message {
+      min-height: 21px;
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .message.error {
+      color: var(--coral);
+    }
+
+    .budget-list,
+    .alert-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .budget,
+    .alert {
+      padding: 12px;
+      box-shadow: none;
+    }
+
+    .budget-row,
+    .alert-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .budget strong,
+    .alert strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status.good {
+      background: var(--soft-green);
+      color: #14633f;
+    }
+
+    .status.warn {
+      background: var(--soft-gold);
+      color: #83520f;
+    }
+
+    .status.risk {
+      background: var(--soft-coral);
+      color: #92331e;
+    }
+
+    .status.info {
+      background: var(--soft-blue);
+      color: #1d5792;
+    }
+
+    .transactions {
+      overflow: hidden;
+    }
+
+    .transactions-head {
+      display: grid;
+      grid-template-columns: 1fr minmax(150px, 190px);
+      gap: 10px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+    }
+
+    th,
+    td {
+      padding: 13px 16px;
+      border-bottom: 1px solid #e8edf3;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #fbfcfe;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .amount {
+      font-weight: 800;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .amount.credit {
+      color: var(--green);
+    }
+
+    .amount.debit {
+      color: var(--coral);
+    }
+
+    .empty {
+      padding: 22px 16px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 950px) {
+      .layout,
+      .work-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app {
+        width: min(100% - 20px, 1180px);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions,
+      .button {
+        width: 100%;
+      }
+
+      .metrics,
+      .inline-fields,
+      .transactions-head {
+        grid-template-columns: 1fr;
+      }
+
+      .metric {
+        min-height: 96px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">$</div>
+        <div>
+          <h1>Mini Banking Dashboard</h1>
+          <p>Accounts, transfers, budgets, and transaction review.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="button" id="seedTransfer" type="button">Sample Transfer</button>
+        <button class="button danger" id="resetData" type="button">Reset Demo Data</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="panel">
+        <div class="section-head">
+          <h2>Accounts</h2>
+          <span class="muted" id="accountCount"></span>
+        </div>
+        <div class="accounts" id="accounts"></div>
+      </aside>
+
+      <section class="content">
+        <div class="metrics" id="metrics"></div>
+
+        <section class="work-grid">
+          <div class="transfer-box">
+            <div class="section-head">
+              <h2>Move Money</h2>
+              <span class="status info">Validated</span>
+            </div>
+            <form id="transferForm">
+              <div class="inline-fields">
+                <div class="field">
+                  <label for="fromAccount">From</label>
+                  <select id="fromAccount" required></select>
+                </div>
+                <div class="field">
+                  <label for="toAccount">To</label>
+                  <select id="toAccount" required></select>
+                </div>
+              </div>
+              <div class="inline-fields">
+                <div class="field">
+                  <label for="amount">Amount</label>
+                  <input id="amount" type="number" min="1" step="0.01" placeholder="250.00" required>
+                </div>
+                <div class="field">
+                  <label for="memo">Memo</label>
+                  <input id="memo" maxlength="42" placeholder="Rent buffer">
+                </div>
+              </div>
+              <button class="button primary" type="submit">Transfer Funds</button>
+              <div class="message" id="transferMessage" aria-live="polite"></div>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="section-head">
+              <h2>Budget Watch</h2>
+              <span class="muted">This month</span>
+            </div>
+            <div class="budget-list" id="budgets"></div>
+          </div>
+        </section>
+
+        <section class="work-grid">
+          <div class="panel">
+            <div class="section-head">
+              <h2>Alerts</h2>
+              <span class="muted" id="alertCount"></span>
+            </div>
+            <div class="alert-list" id="alerts"></div>
+          </div>
+
+          <section class="transactions">
+            <div class="transactions-head">
+              <input id="transactionSearch" type="search" placeholder="Search payee, account, or category">
+              <select id="transactionType">
+                <option value="all">All transactions</option>
+                <option value="credit">Credits only</option>
+                <option value="debit">Debits only</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Payee</th>
+                    <th>Account</th>
+                    <th>Category</th>
+                    <th class="amount">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="transactionRows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const storageKey = "mini-banking-dashboard-state";
+
+    const seedState = {
+      accounts: [
+        { id: "checking", name: "Everyday Checking", type: "Checking", balance: 4280.43, target: 5000 },
+        { id: "savings", name: "Emergency Savings", type: "Savings", balance: 12650.00, target: 15000 },
+        { id: "credit", name: "Travel Rewards Card", type: "Credit", balance: -841.29, limit: 5000 }
+      ],
+      budgets: [
+        { category: "Groceries", spent: 540.20, limit: 700, color: "#1c7c54" },
+        { category: "Dining", spent: 368.85, limit: 420, color: "#b7791f" },
+        { category: "Transport", spent: 192.10, limit: 300, color: "#2364aa" },
+        { category: "Subscriptions", spent: 121.96, limit: 150, color: "#c8553d" }
+      ],
+      transactions: [
+        { id: 101, date: "2026-07-03", accountId: "checking", payee: "Northstar Payroll", category: "Income", type: "credit", amount: 3200.00 },
+        { id: 102, date: "2026-07-02", accountId: "checking", payee: "Green Basket Market", category: "Groceries", type: "debit", amount: 86.72 },
+        { id: 103, date: "2026-07-02", accountId: "credit", payee: "Metro Fuel", category: "Transport", type: "debit", amount: 54.18 },
+        { id: 104, date: "2026-07-01", accountId: "checking", payee: "Oak Street Rent", category: "Housing", type: "debit", amount: 1450.00 },
+        { id: 105, date: "2026-06-30", accountId: "credit", payee: "CloudBox Storage", category: "Subscriptions", type: "debit", amount: 19.99 },
+        { id: 106, date: "2026-06-29", accountId: "checking", payee: "City Power", category: "Utilities", type: "debit", amount: 117.42 },
+        { id: 107, date: "2026-06-28", accountId: "savings", payee: "Interest Payment", category: "Income", type: "credit", amount: 42.31 },
+        { id: 108, date: "2026-06-27", accountId: "credit", payee: "Harbor Bistro", category: "Dining", type: "debit", amount: 73.40 }
+      ]
+    };
+
+    let state = loadState();
+
+    const accountsEl = document.getElementById("accounts");
+    const accountCountEl = document.getElementById("accountCount");
+    const metricsEl = document.getElementById("metrics");
+    const budgetsEl = document.getElementById("budgets");
+    const alertsEl = document.getElementById("alerts");
+    const alertCountEl = document.getElementById("alertCount");
+    const rowsEl = document.getElementById("transactionRows");
+    const fromSelect = document.getElementById("fromAccount");
+    const toSelect = document.getElementById("toAccount");
+    const searchInput = document.getElementById("transactionSearch");
+    const typeSelect = document.getElementById("transactionType");
+    const transferMessage = document.getElementById("transferMessage");
+
+    function loadState() {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : structuredClone(seedState);
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 2
+      }).format(value);
+    }
+
+    function accountById(id) {
+      return state.accounts.find((account) => account.id === id);
+    }
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function renderAccounts() {
+      accountCountEl.textContent = `${state.accounts.length} open`;
+      accountsEl.innerHTML = state.accounts.map((account) => {
+        const isCredit = account.type === "Credit";
+        const rawPercent = isCredit
+          ? Math.abs(account.balance) / account.limit
+          : account.balance / account.target;
+        const percent = Math.min(100, Math.max(0, rawPercent * 100));
+        const bar = isCredit && percent > 50 ? "#c8553d" : isCredit ? "#b7791f" : "#1c7c54";
+        const foot = isCredit
+          ? `${money(Math.abs(account.balance))} used of ${money(account.limit)}`
+          : `${Math.round(percent)}% toward ${money(account.target)}`;
+
+        return `
+          <article class="account">
+            <div class="account-top">
+              <h3>${account.name}</h3>
+              <span class="status ${isCredit ? "warn" : "good"}">${account.type}</span>
+            </div>
+            <div class="account-balance">${money(account.balance)}</div>
+            <div class="account-meta">
+              <span>${foot}</span>
+              <span>${Math.round(percent)}%</span>
+            </div>
+            <div class="meter" aria-hidden="true">
+              <span style="--value: ${percent}%; --bar: ${bar};"></span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderSelects() {
+      const options = state.accounts
+        .map((account) => `<option value="${account.id}">${account.name}</option>`)
+        .join("");
+
+      fromSelect.innerHTML = options;
+      toSelect.innerHTML = options;
+      toSelect.value = state.accounts[1]?.id || state.accounts[0].id;
+    }
+
+    function renderMetrics() {
+      const cash = state.accounts
+        .filter((account) => account.type !== "Credit")
+        .reduce((sum, account) => sum + account.balance, 0);
+      const debt = state.accounts
+        .filter((account) => account.type === "Credit")
+        .reduce((sum, account) => sum + Math.abs(account.balance), 0);
+      const monthDebits = state.transactions
+        .filter((transaction) => transaction.type === "debit")
+        .reduce((sum, transaction) => sum + transaction.amount, 0);
+      const credits = state.transactions
+        .filter((transaction) => transaction.type === "credit")
+        .reduce((sum, transaction) => sum + transaction.amount, 0);
+
+      const metrics = [
+        ["Available cash", money(cash), "Checking and savings combined."],
+        ["Card balance", money(debt), "Credit balance tracked separately."],
+        ["Month spend", money(monthDebits), "Debits currently in the ledger."],
+        ["Income posted", money(credits), "Credits currently in the ledger."]
+      ];
+
+      metricsEl.innerHTML = metrics.map(([label, value, note]) => `
+        <article class="metric">
+          <span>${label}</span>
+          <strong>${value}</strong>
+          <small>${note}</small>
+        </article>
+      `).join("");
+    }
+
+    function renderBudgets() {
+      budgetsEl.innerHTML = state.budgets.map((budget) => {
+        const percent = Math.min(100, Math.round((budget.spent / budget.limit) * 100));
+        const status = percent >= 90 ? "risk" : percent >= 75 ? "warn" : "good";
+        const label = percent >= 90 ? "Tight" : percent >= 75 ? "Watch" : "On Track";
+        return `
+          <article class="budget">
+            <div class="budget-row">
+              <div>
+                <strong>${budget.category}</strong>
+                <span class="muted">${money(budget.spent)} of ${money(budget.limit)}</span>
+              </div>
+              <span class="status ${status}">${label}</span>
+            </div>
+            <div class="meter" aria-hidden="true">
+              <span style="--value: ${percent}%; --bar: ${budget.color};"></span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function buildAlerts() {
+      const alerts = [];
+      const credit = state.accounts.find((account) => account.type === "Credit");
+      const checking = accountById("checking");
+      const dining = state.budgets.find((budget) => budget.category === "Dining");
+
+      if (checking && checking.balance < 2000) {
+        alerts.push({ title: "Checking buffer is low", body: "Move money from savings before large bills clear.", kind: "warn" });
+      }
+
+      if (credit && Math.abs(credit.balance) / credit.limit > 0.25) {
+        alerts.push({ title: "Card utilization is climbing", body: `${money(Math.abs(credit.balance))} is currently on the card.`, kind: "risk" });
+      }
+
+      if (dining && dining.spent / dining.limit > 0.8) {
+        alerts.push({ title: "Dining budget is almost used", body: `${money(dining.limit - dining.spent)} remains this month.`, kind: "warn" });
+      }
+
+      const largeDebit = state.transactions.find((transaction) => transaction.type === "debit" && transaction.amount > 1000);
+      if (largeDebit) {
+        alerts.push({ title: "Large transaction detected", body: `${largeDebit.payee} posted for ${money(largeDebit.amount)}.`, kind: "info" });
+      }
+
+      return alerts;
+    }
+
+    function renderAlerts() {
+      const alerts = buildAlerts();
+      alertCountEl.textContent = `${alerts.length} active`;
+      alertsEl.innerHTML = alerts.map((alert) => `
+        <article class="alert">
+          <div class="alert-row">
+            <div>
+              <strong>${alert.title}</strong>
+              <span class="muted">${alert.body}</span>
+            </div>
+            <span class="status ${alert.kind}">${alert.kind}</span>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderTransactions() {
+      const query = searchInput.value.trim().toLowerCase();
+      const type = typeSelect.value;
+
+      const visible = state.transactions
+        .filter((transaction) => type === "all" || transaction.type === type)
+        .filter((transaction) => {
+          const account = accountById(transaction.accountId);
+          const haystack = `${transaction.payee} ${transaction.category} ${account?.name || ""}`.toLowerCase();
+          return haystack.includes(query);
+        })
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+      if (!visible.length) {
+        rowsEl.innerHTML = `<tr><td class="empty" colspan="5">No matching transactions.</td></tr>`;
+        return;
+      }
+
+      rowsEl.innerHTML = visible.map((transaction) => {
+        const account = accountById(transaction.accountId);
+        const sign = transaction.type === "credit" ? "+" : "-";
+        return `
+          <tr>
+            <td>${transaction.date}</td>
+            <td><strong>${transaction.payee}</strong></td>
+            <td>${account?.name || "Unknown"}</td>
+            <td>${transaction.category}</td>
+            <td class="amount ${transaction.type}">${sign}${money(transaction.amount)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderAll() {
+      renderAccounts();
+      renderSelects();
+      renderMetrics();
+      renderBudgets();
+      renderAlerts();
+      renderTransactions();
+    }
+
+    function transferFunds(fromId, toId, amount, memo) {
+      const from = accountById(fromId);
+      const to = accountById(toId);
+
+      from.balance = Number((from.balance - amount).toFixed(2));
+      to.balance = Number((to.balance + amount).toFixed(2));
+
+      const label = memo || `Transfer to ${to.name}`;
+      const idBase = Date.now();
+
+      state.transactions.unshift(
+        { id: idBase, date: today(), accountId: from.id, payee: label, category: "Transfer", type: "debit", amount },
+        { id: idBase + 1, date: today(), accountId: to.id, payee: `Transfer from ${from.name}`, category: "Transfer", type: "credit", amount }
+      );
+
+      saveState();
+      renderAll();
+    }
+
+    document.getElementById("transferForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const fromId = fromSelect.value;
+      const toId = toSelect.value;
+      const amount = Number(document.getElementById("amount").value);
+      const memo = document.getElementById("memo").value.trim();
+      const from = accountById(fromId);
+
+      transferMessage.classList.remove("error");
+
+      if (fromId === toId) {
+        transferMessage.textContent = "Choose two different accounts.";
+        transferMessage.classList.add("error");
+        return;
+      }
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        transferMessage.textContent = "Enter a valid transfer amount.";
+        transferMessage.classList.add("error");
+        return;
+      }
+
+      if (from.type !== "Credit" && from.balance < amount) {
+        transferMessage.textContent = "That account does not have enough available cash.";
+        transferMessage.classList.add("error");
+        return;
+      }
+
+      transferFunds(fromId, toId, amount, memo);
+      event.target.reset();
+      toSelect.value = state.accounts[1]?.id || state.accounts[0].id;
+      transferMessage.textContent = "Transfer posted and dashboard updated.";
+    });
+
+    document.getElementById("seedTransfer").addEventListener("click", () => {
+      transferFunds("checking", "savings", 250, "Weekly savings sweep");
+      transferMessage.classList.remove("error");
+      transferMessage.textContent = "Sample transfer posted.";
+    });
+
+    document.getElementById("resetData").addEventListener("click", () => {
+      state = structuredClone(seedState);
+      saveState();
+      searchInput.value = "";
+      typeSelect.value = "all";
+      transferMessage.textContent = "Demo data reset.";
+      transferMessage.classList.remove("error");
+      renderAll();
+    });
+
+    searchInput.addEventListener("input", renderTransactions);
+    typeSelect.addEventListener("change", renderTransactions);
+
+    renderAll();
+  </script>
+</body>
+</html>

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription Billing Mock App</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17211f;
+      --muted: #66736f;
+      --page: #f4f6f5;
+      --panel: #ffffff;
+      --line: #d6dfdc;
+      --primary: #27695f;
+      --violet: #6b527f;
+      --gold: #a76818;
+      --red: #b54433;
+      --green: #24754d;
+      --soft-primary: #e6f4f1;
+      --soft-violet: #f2eef7;
+      --soft-gold: #fff4dc;
+      --soft-red: #ffefec;
+      --soft-green: #e9f6ef;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .brand p,
+    .muted {
+      color: var(--muted);
+    }
+
+    .brand p {
+      margin-bottom: 0;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px;
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 800;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    .button:hover {
+      border-color: #a7b7b2;
+      background: #fbfdfc;
+    }
+
+    .button:active {
+      transform: translateY(1px);
+    }
+
+    .button.primary {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .button.danger {
+      border-color: #e2ada3;
+      background: var(--soft-red);
+      color: #873125;
+    }
+
+    .button.small {
+      min-height: 32px;
+      padding: 0 10px;
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .content,
+    .side {
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel,
+    .metric,
+    .plan,
+    .event,
+    .invoice-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 12px 28px rgba(23, 33, 31, 0.07);
+    }
+
+    .panel {
+      padding: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 112px;
+      padding: 15px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .metric strong {
+      font-size: clamp(24px, 3vw, 31px);
+      letter-spacing: 0;
+    }
+
+    .metric small {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .plan {
+      padding: 15px;
+      box-shadow: none;
+    }
+
+    .plan h3 {
+      margin: 0 0 6px;
+      font-size: 17px;
+    }
+
+    .plan-price {
+      margin: 8px 0 10px;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .plan ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr minmax(150px, 190px);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #c9d4d0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    input:focus,
+    select:focus {
+      outline: 3px solid rgba(39, 105, 95, 0.18);
+      border-color: var(--primary);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: #ffffff;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #e7eeeb;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #fbfcfb;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .right {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .status.active,
+    .status.paid {
+      background: var(--soft-green);
+      color: #16603d;
+    }
+
+    .status.trial,
+    .status.open {
+      background: var(--soft-violet);
+      color: #58436d;
+    }
+
+    .status.past-due,
+    .status.failed {
+      background: var(--soft-red);
+      color: #883025;
+    }
+
+    .status.canceled {
+      background: #edf0f2;
+      color: #59636d;
+    }
+
+    .status.annual {
+      background: var(--soft-gold);
+      color: #80500d;
+    }
+
+    form {
+      display: grid;
+      gap: 11px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: #40524e;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .invoice-card,
+    .event {
+      padding: 12px;
+      box-shadow: none;
+    }
+
+    .invoice-card strong,
+    .event strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .invoice-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+
+    .notice {
+      min-height: 20px;
+      color: var(--green);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 14px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1050px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .metrics,
+      .plans {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        width: min(100% - 20px, 1220px);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .top-actions,
+      .button {
+        width: 100%;
+      }
+
+      .metrics,
+      .plans,
+      .side,
+      .toolbar,
+      .split {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">SB</div>
+        <div>
+          <h1>Subscription Billing Mock App</h1>
+          <p>Plans, subscriptions, invoices, and failed-payment recovery.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="button" id="simulateFailure" type="button">Simulate Failed Payment</button>
+        <button class="button danger" id="resetData" type="button">Reset Demo Data</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="content">
+        <div class="metrics" id="metrics"></div>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Plans</h2>
+            <span class="muted">Catalog</span>
+          </div>
+          <div class="plans" id="plans"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Customers</h2>
+            <span class="muted" id="customerCount"></span>
+          </div>
+          <div class="toolbar">
+            <input id="customerSearch" type="search" placeholder="Search customer, company, email, or plan">
+            <select id="statusFilter">
+              <option value="all">All statuses</option>
+              <option value="Active">Active</option>
+              <option value="Trial">Trial</option>
+              <option value="Past Due">Past due</option>
+              <option value="Canceled">Canceled</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Plan</th>
+                  <th>Status</th>
+                  <th>Next Invoice</th>
+                  <th>Payment</th>
+                  <th class="right">MRR</th>
+                </tr>
+              </thead>
+              <tbody id="customerRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <aside class="side">
+        <section class="panel">
+          <div class="section-head">
+            <h2>Add Customer</h2>
+            <span class="status open">Demo</span>
+          </div>
+          <form id="customerForm">
+            <div class="field">
+              <label for="customerName">Name</label>
+              <input id="customerName" required maxlength="42" placeholder="Jordan Fox">
+            </div>
+            <div class="field">
+              <label for="company">Company</label>
+              <input id="company" required maxlength="48" placeholder="Fox Creative">
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" required maxlength="56" placeholder="jordan@example.com">
+            </div>
+            <div class="split">
+              <div class="field">
+                <label for="plan">Plan</label>
+                <select id="plan"></select>
+              </div>
+              <div class="field">
+                <label for="billingCycle">Billing</label>
+                <select id="billingCycle">
+                  <option>Monthly</option>
+                  <option>Annual</option>
+                </select>
+              </div>
+            </div>
+            <button class="button primary" type="submit">Create Subscription</button>
+            <div class="notice" id="customerNotice" aria-live="polite"></div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Invoices</h2>
+            <span class="muted" id="invoiceCount"></span>
+          </div>
+          <div class="stack" id="invoices"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Billing Events</h2>
+            <span class="muted">Latest</span>
+          </div>
+          <div class="stack" id="events"></div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const storageKey = "subscription-billing-state";
+
+    const seedState = {
+      plans: [
+        { id: "starter", name: "Starter", monthly: 19, annual: 190, seats: 3, features: ["Basic dashboard", "Email support", "Usage history"] },
+        { id: "growth", name: "Growth", monthly: 79, annual: 790, seats: 15, features: ["Team roles", "Invoice exports", "Priority support"] },
+        { id: "scale", name: "Scale", monthly: 199, annual: 1990, seats: 50, features: ["Advanced controls", "Custom terms", "Dedicated onboarding"] }
+      ],
+      customers: [
+        { id: 1, name: "Maya Chen", company: "Chen Analytics", email: "maya@chenanalytics.example", planId: "growth", cycle: "Monthly", status: "Active", nextInvoice: "2026-08-01", payment: "Visa 4421" },
+        { id: 2, name: "Owen Brooks", company: "Brooks Studio", email: "owen@brooksstudio.example", planId: "starter", cycle: "Monthly", status: "Trial", nextInvoice: "2026-07-12", payment: "Not added" },
+        { id: 3, name: "Leah Grant", company: "Grant Logistics", email: "leah@grantlogistics.example", planId: "scale", cycle: "Annual", status: "Active", nextInvoice: "2027-02-20", payment: "ACH 9102" },
+        { id: 4, name: "Noah Stein", company: "Stein Labs", email: "noah@steinlabs.example", planId: "growth", cycle: "Monthly", status: "Past Due", nextInvoice: "2026-07-01", payment: "Mastercard 1188" },
+        { id: 5, name: "Priya Shah", company: "Shah Design", email: "priya@shahdesign.example", planId: "starter", cycle: "Monthly", status: "Canceled", nextInvoice: "Canceled", payment: "Visa 2104" }
+      ],
+      invoices: [
+        { id: "INV-1042", customerId: 1, issued: "2026-07-01", due: "2026-07-01", amount: 79, status: "Paid" },
+        { id: "INV-1043", customerId: 4, issued: "2026-07-01", due: "2026-07-04", amount: 79, status: "Past Due" },
+        { id: "INV-1044", customerId: 2, issued: "2026-07-12", due: "2026-07-12", amount: 19, status: "Open" },
+        { id: "INV-1038", customerId: 5, issued: "2026-06-15", due: "2026-06-15", amount: 19, status: "Failed" }
+      ],
+      events: [
+        { id: 401, date: "2026-07-04", title: "Payment retry scheduled", detail: "Stein Labs has a past-due Growth invoice." },
+        { id: 402, date: "2026-07-02", title: "Annual invoice paid", detail: "Grant Logistics renewed Scale for another year." },
+        { id: 403, date: "2026-07-01", title: "Monthly invoice paid", detail: "Chen Analytics paid INV-1042." }
+      ]
+    };
+
+    let state = loadState();
+
+    const metricsEl = document.getElementById("metrics");
+    const plansEl = document.getElementById("plans");
+    const planSelect = document.getElementById("plan");
+    const customerRowsEl = document.getElementById("customerRows");
+    const customerCountEl = document.getElementById("customerCount");
+    const customerSearch = document.getElementById("customerSearch");
+    const statusFilter = document.getElementById("statusFilter");
+    const invoicesEl = document.getElementById("invoices");
+    const invoiceCountEl = document.getElementById("invoiceCount");
+    const eventsEl = document.getElementById("events");
+    const customerNotice = document.getElementById("customerNotice");
+
+    function loadState() {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : structuredClone(seedState);
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function statusClass(value) {
+      return value.toLowerCase().replace(/\s+/g, "-");
+    }
+
+    function getPlan(id) {
+      return state.plans.find((plan) => plan.id === id);
+    }
+
+    function getCustomer(id) {
+      return state.customers.find((customer) => customer.id === id);
+    }
+
+    function customerMrr(customer) {
+      const plan = getPlan(customer.planId);
+      if (!plan || customer.status === "Canceled") {
+        return 0;
+      }
+      return customer.cycle === "Annual" ? Math.round(plan.annual / 12) : plan.monthly;
+    }
+
+    function invoiceCustomerName(invoice) {
+      const customer = getCustomer(invoice.customerId);
+      return customer ? customer.company : "Unknown customer";
+    }
+
+    function renderMetrics() {
+      const activeCustomers = state.customers.filter((customer) => customer.status === "Active" || customer.status === "Trial");
+      const mrr = state.customers.reduce((sum, customer) => sum + customerMrr(customer), 0);
+      const overdue = state.invoices
+        .filter((invoice) => invoice.status === "Past Due" || invoice.status === "Failed")
+        .reduce((sum, invoice) => sum + invoice.amount, 0);
+      const churnRisk = state.customers.filter((customer) => customer.status === "Past Due" || customer.status === "Canceled").length;
+
+      const metrics = [
+        ["MRR", money(mrr), "Monthly recurring revenue estimate"],
+        ["Active subs", activeCustomers.length, "Active and trial subscriptions"],
+        ["Overdue", money(overdue), "Failed or past-due invoices"],
+        ["Churn risk", churnRisk, "Past-due or canceled accounts"]
+      ];
+
+      metricsEl.innerHTML = metrics.map(([label, value, note]) => `
+        <article class="metric">
+          <span>${label}</span>
+          <strong>${value}</strong>
+          <small>${note}</small>
+        </article>
+      `).join("");
+    }
+
+    function renderPlans() {
+      plansEl.innerHTML = state.plans.map((plan) => `
+        <article class="plan">
+          <h3>${plan.name}</h3>
+          <span class="muted">${plan.seats} seats included</span>
+          <div class="plan-price">${money(plan.monthly)}<span class="muted">/mo</span></div>
+          <span class="status annual">${money(plan.annual)} annually</span>
+          <ul>
+            ${plan.features.map((feature) => `<li>${feature}</li>`).join("")}
+          </ul>
+        </article>
+      `).join("");
+
+      planSelect.innerHTML = state.plans
+        .map((plan) => `<option value="${plan.id}">${plan.name}</option>`)
+        .join("");
+    }
+
+    function renderCustomers() {
+      const query = customerSearch.value.trim().toLowerCase();
+      const filter = statusFilter.value;
+
+      const visible = state.customers.filter((customer) => {
+        const plan = getPlan(customer.planId);
+        const haystack = `${customer.name} ${customer.company} ${customer.email} ${plan?.name || ""}`.toLowerCase();
+        return haystack.includes(query) && (filter === "all" || customer.status === filter);
+      });
+
+      customerCountEl.textContent = `${visible.length} shown`;
+
+      if (!visible.length) {
+        customerRowsEl.innerHTML = `<tr><td class="empty" colspan="6">No matching customers.</td></tr>`;
+        return;
+      }
+
+      customerRowsEl.innerHTML = visible.map((customer) => {
+        const plan = getPlan(customer.planId);
+        return `
+          <tr>
+            <td>
+              <strong>${customer.name}</strong><br>
+              <span class="muted">${customer.company} · ${customer.email}</span>
+            </td>
+            <td>${plan?.name || "Unknown"}<br><span class="muted">${customer.cycle}</span></td>
+            <td><span class="status ${statusClass(customer.status)}">${customer.status}</span></td>
+            <td>${customer.nextInvoice}</td>
+            <td>${customer.payment}</td>
+            <td class="right"><strong>${money(customerMrr(customer))}</strong></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderInvoices() {
+      const actionable = state.invoices
+        .slice()
+        .sort((a, b) => {
+          const severity = { "Failed": 0, "Past Due": 1, "Open": 2, "Paid": 3 };
+          return severity[a.status] - severity[b.status] || b.issued.localeCompare(a.issued);
+        });
+
+      invoiceCountEl.textContent = `${actionable.length} total`;
+
+      invoicesEl.innerHTML = actionable.map((invoice) => {
+        const canRetry = invoice.status === "Failed" || invoice.status === "Past Due";
+        return `
+          <article class="invoice-card">
+            <div class="invoice-row">
+              <div>
+                <strong>${invoice.id} · ${invoiceCustomerName(invoice)}</strong>
+                <span class="muted">Issued ${invoice.issued} · due ${invoice.due}</span>
+              </div>
+              <span class="status ${statusClass(invoice.status)}">${invoice.status}</span>
+            </div>
+            <div class="invoice-row">
+              <strong>${money(invoice.amount)}</strong>
+              ${canRetry ? `<button class="button small" data-retry="${invoice.id}" type="button">Retry Payment</button>` : ""}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderEvents() {
+      eventsEl.innerHTML = state.events
+        .slice()
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 6)
+        .map((event) => `
+          <article class="event">
+            <strong>${event.title}</strong>
+            <span class="muted">${event.date} · ${event.detail}</span>
+          </article>
+        `).join("");
+    }
+
+    function renderAll() {
+      renderMetrics();
+      renderPlans();
+      renderCustomers();
+      renderInvoices();
+      renderEvents();
+    }
+
+    function addEvent(title, detail) {
+      state.events.unshift({
+        id: Date.now(),
+        date: today(),
+        title,
+        detail
+      });
+    }
+
+    document.getElementById("customerForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = document.getElementById("customerName").value.trim();
+      const company = document.getElementById("company").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const planId = document.getElementById("plan").value;
+      const cycle = document.getElementById("billingCycle").value;
+      const plan = getPlan(planId);
+      const customerId = Date.now();
+
+      state.customers.unshift({
+        id: customerId,
+        name,
+        company,
+        email,
+        planId,
+        cycle,
+        status: "Trial",
+        nextInvoice: "2026-07-19",
+        payment: "Not added"
+      });
+
+      state.invoices.unshift({
+        id: `INV-${Math.floor(2000 + Math.random() * 7000)}`,
+        customerId,
+        issued: "2026-07-19",
+        due: "2026-07-19",
+        amount: cycle === "Annual" ? plan.annual : plan.monthly,
+        status: "Open"
+      });
+
+      addEvent("Trial subscription created", `${company} started a ${plan.name} ${cycle.toLowerCase()} plan.`);
+      saveState();
+      event.target.reset();
+      customerNotice.textContent = "Customer and first invoice created.";
+      renderAll();
+    });
+
+    invoicesEl.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-retry]");
+      if (!button) {
+        return;
+      }
+
+      const invoice = state.invoices.find((item) => item.id === button.dataset.retry);
+      const customer = getCustomer(invoice.customerId);
+      invoice.status = "Paid";
+      if (customer && customer.status !== "Canceled") {
+        customer.status = "Active";
+      }
+
+      addEvent("Payment retry succeeded", `${invoiceCustomerName(invoice)} paid ${invoice.id} for ${money(invoice.amount)}.`);
+      saveState();
+      customerNotice.textContent = "Payment retry succeeded.";
+      renderAll();
+    });
+
+    document.getElementById("simulateFailure").addEventListener("click", () => {
+      const customer = state.customers.find((item) => item.status === "Active") || state.customers[0];
+      const plan = getPlan(customer.planId);
+      const invoiceId = `INV-${Math.floor(2000 + Math.random() * 7000)}`;
+      const amount = customer.cycle === "Annual" ? plan.annual : plan.monthly;
+
+      customer.status = "Past Due";
+      state.invoices.unshift({
+        id: invoiceId,
+        customerId: customer.id,
+        issued: today(),
+        due: today(),
+        amount,
+        status: "Failed"
+      });
+
+      addEvent("Payment failed", `${customer.company} needs a payment retry for ${invoiceId}.`);
+      saveState();
+      customerNotice.textContent = "A failed payment was added.";
+      renderAll();
+    });
+
+    document.getElementById("resetData").addEventListener("click", () => {
+      state = structuredClone(seedState);
+      saveState();
+      customerSearch.value = "";
+      statusFilter.value = "all";
+      customerNotice.textContent = "Demo data reset.";
+      renderAll();
+    });
+
+    customerSearch.addEventListener("input", renderCustomers);
+    statusFilter.addEventListener("change", renderCustomers);
+
+    renderAll();
+  </script>
+</body>
+</html>
